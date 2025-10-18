@@ -1,0 +1,117 @@
+.event-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.625rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: box-shadow 0.2s;
+}
+
+.event-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.event-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-profiles {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: hsl(var(--primary));
+}
+
+.event-profiles svg {
+  flex-shrink: 0;
+}
+
+.event-profiles span {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.event-card-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid hsl(var(--border));
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.event-date-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+}
+
+.event-date-item > svg {
+  margin-top: 0.125rem;
+  color: hsl(var(--muted-foreground));
+  flex-shrink: 0;
+}
+
+.date-label {
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.time-display {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+}
+
+.time-display svg {
+  flex-shrink: 0;
+}
+
+.event-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.meta-item {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.event-card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.btn-secondary {
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-secondary:hover {
+  background: hsl(var(--accent));
+}
+
+.btn-secondary svg {
+  flex-shrink: 0;
+}
