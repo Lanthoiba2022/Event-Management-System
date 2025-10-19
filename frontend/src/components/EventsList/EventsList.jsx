@@ -69,6 +69,7 @@ const EventsList = ({ events, profiles, viewTimezone, onTimezoneChange, onEventU
         <EventLogsModal
           event={viewingLogs}
           profiles={profiles}
+          viewTimezone={viewTimezone}
           onClose={() => setViewingLogs(null)}
         />
       )}

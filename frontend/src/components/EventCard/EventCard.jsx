@@ -52,8 +52,17 @@ const EventCard = ({ event, profiles, viewTimezone, onEdit, onViewLogs, onDelete
 
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
-      ' at ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric',
+      timeZone: viewTimezone 
+    }) + ' at ' + date.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: true,
+      timeZone: viewTimezone 
+    });
   };
 
   const start = formatDateTime(event.startDateTime, event.timezone, viewTimezone);
@@ -102,6 +111,7 @@ const EventCard = ({ event, profiles, viewTimezone, onEdit, onViewLogs, onDelete
       <div className="event-card-meta">
         <div className="meta-item">Created: {formatTimestamp(event.createdAt)}</div>
         <div className="meta-item">Updated: {formatTimestamp(event.updatedAt)}</div>
+        <div className="meta-item timezone-indicator">Times in {viewTimezone}</div>
       </div>
 
       <div className="event-card-actions">

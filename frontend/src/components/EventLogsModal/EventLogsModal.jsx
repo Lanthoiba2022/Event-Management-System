@@ -3,7 +3,7 @@ import { X, Clock } from 'lucide-react';
 import { logsAPI } from '../../services/api';
 import './EventLogsModal.css';
 
-const EventLogsModal = ({ event, profiles, onClose }) => {
+const EventLogsModal = ({ event, profiles, viewTimezone, onClose }) => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,8 +28,17 @@ const EventLogsModal = ({ event, profiles, onClose }) => {
 
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
-      ' at ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric',
+      timeZone: viewTimezone 
+    }) + ' at ' + date.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: true,
+      timeZone: viewTimezone 
+    });
   };
 
   const formatProfileNames = (profileIds) => {
@@ -53,7 +62,8 @@ const EventLogsModal = ({ event, profiles, onClose }) => {
           day: 'numeric',
           hour: '2-digit',
           minute: '2-digit',
-          hour12: true
+          hour12: true,
+          timeZone: viewTimezone
         });
       } catch (error) {
         return value;
@@ -69,13 +79,13 @@ const EventLogsModal = ({ event, profiles, onClose }) => {
 
     switch (field) {
       case 'profiles':
-        return `Profiles changed to: ${newValue}`;
+        return `Profiles changed from "${oldValue}" to "${newValue}"`;
       case 'timezone':
         return `Timezone changed from "${oldValue}" to "${newValue}"`;
       case 'startDateTime':
-        return `Start date/time updated`;
+        return `Start date/time changed from "${oldValue}" to "${newValue}"`;
       case 'endDateTime':
-        return `End date/time updated`;
+        return `End date/time changed from "${oldValue}" to "${newValue}"`;
       default:
         return `${field} changed from "${oldValue}" to "${newValue}"`;
     }
@@ -85,7 +95,10 @@ const EventLogsModal = ({ event, profiles, onClose }) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content logs-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Event Update History</h2>
+          <div>
+            <h2>Event Update History</h2>
+            <p className="timezone-info">Times shown in {viewTimezone}</p>
+          </div>
           <button className="modal-close" onClick={onClose}>
             <X size={20} />
           </button>
