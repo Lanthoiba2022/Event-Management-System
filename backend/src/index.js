@@ -13,7 +13,6 @@ import logRoutes from './routes/logs.js';
 dotenv.config();
 
 // Connect to database
-console.log("URI:", process.env.MONGODB_URI);
 connectDB();
 
 const app = express();
