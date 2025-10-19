@@ -27,28 +27,6 @@
   color: hsl(var(--foreground));
 }
 
-.timezone-select {
-  width: 100%;
-  padding: 0.625rem 0.75rem;
-  font-size: 0.875rem;
-  border: 1px solid hsl(var(--border));
-  border-radius: 0.5rem;
-  background: hsl(var(--background));
-  color: hsl(var(--foreground));
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.timezone-select:hover {
-  border-color: hsl(var(--ring));
-}
-
-.timezone-select:focus {
-  outline: none;
-  border-color: hsl(var(--ring));
-  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.1);
-}
-
 .events-container {
   display: flex;
   flex-direction: column;
@@ -56,12 +34,18 @@
 }
 
 .no-events {
-  padding: 3rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 2rem;
   text-align: center;
 }
 
 .no-events p {
   color: hsl(var(--muted-foreground));
-  font-size: 0.9375rem;
+  font-size: 1rem;
+  font-weight: 600;
   margin: 0;
+  opacity: 0.8;
 }

@@ -42,7 +42,7 @@
   position: absolute;
   top: calc(100% + 0.5rem);
   left: 0;
-  right: 0;
+  width: 100%;
   background: hsl(var(--popover));
   border: 1px solid hsl(var(--border));
   border-radius: 0.5rem;

@@ -26,8 +26,8 @@
 .profile-selector-dropdown {
   position: absolute;
   top: calc(100% + 0.5rem);
-  right: 0;
-  min-width: 280px;
+  left: 0;
+  width: 100%;
   background: hsl(var(--popover));
   border: 1px solid hsl(var(--border));
   border-radius: 0.5rem;
@@ -88,6 +88,7 @@
   transition: background 0.15s;
   font-size: 0.875rem;
   color: hsl(var(--foreground));
+  position: relative;
 }
 
 .dropdown-option:hover {
@@ -170,4 +171,40 @@
 .add-icon {
   font-size: 1rem;
   line-height: 1;
+}
+
+.profile-name {
+  flex: 1;
+  text-align: left;
+}
+
+.delete-profile-btn {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.delete-profile-btn:hover {
+  background: hsl(var(--destructive) / 0.9);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.dropdown-option:hover .delete-profile-btn {
+  opacity: 1;
+  visibility: visible;
 }

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import './MultiSelect.css';
 
-const MultiSelect = ({ options, selected, onChange, onAddNew, placeholder }) => {
+const MultiSelect = ({ options = [], selected = [], onChange, onAddNew, placeholder = "Select profiles..." }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddInput, setShowAddInput] = useState(false);
@@ -29,17 +29,21 @@ const MultiSelect = ({ options, selected, onChange, onAddNew, placeholder }) => 
     }
   };
 
-  const handleAddProfile = () => {
+  const handleAddProfile = async () => {
     if (newProfileName.trim()) {
       const newProfile = {
-        _id: Date.now().toString(),
         name: newProfileName.trim(),
       };
-      onAddNew(newProfile);
-      onChange([...selected, newProfile._id]);
-      setNewProfileName('');
-      setShowAddInput(false);
-      setSearchTerm('');
+      try {
+        const createdProfile = await onAddNew(newProfile);
+        onChange([...selected, createdProfile._id]);
+        setNewProfileName('');
+        setShowAddInput(false);
+        setSearchTerm('');
+      } catch (error) {
+        console.error('Error creating profile:', error);
+        // Don't close the input on error so user can try again
+      }
     }
   };
 
@@ -91,29 +95,32 @@ const MultiSelect = ({ options, selected, onChange, onAddNew, placeholder }) => 
           </div>
 
           <div className="dropdown-options">
-            {filteredOptions.map(option => (
-              <label key={option._id} className="dropdown-option">
-                <input
-                  type="checkbox"
-                  checked={selected.includes(option._id)}
-                  onChange={() => handleToggle(option._id)}
-                />
-                <span className={selected.includes(option._id) ? 'selected' : ''}>
-                  {selected.includes(option._id) && (
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path
-                        d="M11.6667 3.5L5.25 9.91667L2.33333 7"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
-                  {option.name}
-                </span>
-              </label>
-            ))}
+            {filteredOptions.map(option => {
+              const isSelected = selected.includes(option._id);
+              return (
+                <label key={option._id} className="dropdown-option">
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => handleToggle(option._id)}
+                  />
+                  <span className={isSelected ? 'selected' : ''}>
+                    {isSelected && (
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path
+                          d="M11.6667 3.5L5.25 9.91667L2.33333 7"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
+                    {option.name}
+                  </span>
+                </label>
+              );
+            })}
           </div>
 
           {showAddInput ? (

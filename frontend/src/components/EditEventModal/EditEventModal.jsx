@@ -1,25 +1,103 @@
 import { useState } from 'react';
 import MultiSelect from '../MultiSelect/MultiSelect';
 import DateTimePicker from '../DateTimePicker/DateTimePicker';
+import TimezoneSelector from '../TimezoneSelector/TimezoneSelector';
 import './EditEventModal.css';
 
-const TIMEZONES = [
-  { value: 'America/New_York', label: 'Eastern Time (ET)' },
-  { value: 'America/Chicago', label: 'Central Time (CT)' },
-  { value: 'America/Denver', label: 'Mountain Time (MT)' },
-  { value: 'America/Los_Angeles', label: 'Pacific Time (PT)' },
-  { value: 'Asia/Kolkata', label: 'India (IST)' },
-  { value: 'Europe/London', label: 'London (GMT)' },
-  { value: 'Asia/Tokyo', label: 'Tokyo (JST)' },
-];
+const EditEventModal = ({ event, profiles, onClose, onSave, onAddProfile }) => {
+  // Parse ISO datetime and convert to event timezone for editing
+  const parseISOToLocalTime = (isoString, timezone) => {
+    try {
+      const date = new Date(isoString);
+      
+      // Use Intl.DateTimeFormat for more reliable timezone conversion
+      const dateFormatter = new Intl.DateTimeFormat('en-CA', { 
+        timeZone: timezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+      
+      const timeFormatter = new Intl.DateTimeFormat('en-US', { 
+        timeZone: timezone,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+      
+      const dateParts = dateFormatter.formatToParts(date);
+      const timeParts = timeFormatter.formatToParts(date);
+      
+      const year = dateParts.find(part => part.type === 'year').value;
+      const month = dateParts.find(part => part.type === 'month').value;
+      const day = dateParts.find(part => part.type === 'day').value;
+      const hour = timeParts.find(part => part.type === 'hour').value;
+      const minute = timeParts.find(part => part.type === 'minute').value;
+      
+      return {
+        date: `${year}-${month}-${day}`,
+        time: `${hour}:${minute}`
+      };
+    } catch (error) {
+      console.error('Error parsing datetime:', error);
+      // Fallback to current date/time
+      const now = new Date();
+      return {
+        date: now.toISOString().split('T')[0],
+        time: '09:00'
+      };
+    }
+  };
 
-const EditEventModal = ({ event, profiles, onClose, onSave }) => {
-  const [selectedProfiles, setSelectedProfiles] = useState(event.profiles);
+  const startParsed = parseISOToLocalTime(event.startDateTime, event.timezone);
+  const endParsed = parseISOToLocalTime(event.endDateTime, event.timezone);
+
+  // Handle profiles - they might be populated objects or IDs
+  const getProfileIds = (profiles) => {
+    if (!profiles || profiles.length === 0) return [];
+    // Check if profiles are objects with _id property (populated)
+    if (typeof profiles[0] === 'object' && profiles[0]._id) {
+      return profiles.map(p => p._id);
+    }
+    // Otherwise they are already IDs
+    return profiles;
+  };
+
+  const [selectedProfiles, setSelectedProfiles] = useState(getProfileIds(event.profiles));
   const [timezone, setTimezone] = useState(event.timezone);
-  const [startDate, setStartDate] = useState(event.startDateTime.split('T')[0]);
-  const [startTime, setStartTime] = useState(event.startDateTime.split('T')[1] || '09:00');
-  const [endDate, setEndDate] = useState(event.endDateTime.split('T')[0]);
-  const [endTime, setEndTime] = useState(event.endDateTime.split('T')[1] || '09:00');
+  const [startDate, setStartDate] = useState(startParsed.date);
+  const [startTime, setStartTime] = useState(startParsed.time);
+  const [endDate, setEndDate] = useState(endParsed.date);
+  const [endTime, setEndTime] = useState(endParsed.time);
+  
+  // Track if datetime fields have been modified
+  const [startDateTimeModified, setStartDateTimeModified] = useState(false);
+  const [endDateTimeModified, setEndDateTimeModified] = useState(false);
+
+  // Handle start date change - if end date is before new start date, update end date
+  const handleStartDateChange = (newStartDate) => {
+    setStartDate(newStartDate);
+    setStartDateTimeModified(true);
+    if (endDate && newStartDate && endDate < newStartDate) {
+      setEndDate(newStartDate);
+      setEndDateTimeModified(true);
+    }
+  };
+
+  const handleStartTimeChange = (newStartTime) => {
+    setStartTime(newStartTime);
+    setStartDateTimeModified(true);
+  };
+
+  const handleEndDateChange = (newEndDate) => {
+    setEndDate(newEndDate);
+    setEndDateTimeModified(true);
+  };
+
+  const handleEndTimeChange = (newEndTime) => {
+    setEndTime(newEndTime);
+    setEndDateTimeModified(true);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -29,14 +107,24 @@ const EditEventModal = ({ event, profiles, onClose, onSave }) => {
       return;
     }
 
+    // Create the updated event data in the format expected by the backend
     const updatedEvent = {
-      ...event,
+      _id: event._id,
       profiles: selectedProfiles,
       timezone,
-      startDateTime: `${startDate}T${startTime}`,
-      endDateTime: `${endDate}T${endTime}`,
+      createdAt: event.createdAt,
       updatedAt: new Date().toISOString(),
     };
+
+    // Only include datetime values if they were modified
+    if (startDateTimeModified) {
+      updatedEvent.startDateTime = `${startDate}T${startTime}`;
+    }
+    
+    if (endDateTimeModified) {
+      updatedEvent.endDateTime = `${endDate}T${endTime}`;
+    }
+
 
     onSave(updatedEvent);
   };
@@ -66,24 +154,18 @@ const EditEventModal = ({ event, profiles, onClose, onSave }) => {
               options={profiles}
               selected={selectedProfiles}
               onChange={setSelectedProfiles}
-              onAddNew={() => {}}
+              onAddNew={onAddProfile}
               placeholder="Select profiles..."
             />
           </div>
 
           <div className="form-group">
             <label className="form-label">Timezone</label>
-            <select
-              className="form-select"
-              value={timezone}
-              onChange={(e) => setTimezone(e.target.value)}
-            >
-              {TIMEZONES.map(tz => (
-                <option key={tz.value} value={tz.value}>
-                  {tz.label}
-                </option>
-              ))}
-            </select>
+            <TimezoneSelector
+              selectedTimezone={timezone}
+              onTimezoneChange={setTimezone}
+              placeholder="Select timezone..."
+            />
           </div>
 
           <div className="form-group">
@@ -91,8 +173,8 @@ const EditEventModal = ({ event, profiles, onClose, onSave }) => {
             <DateTimePicker
               date={startDate}
               time={startTime}
-              onDateChange={setStartDate}
-              onTimeChange={setStartTime}
+              onDateChange={handleStartDateChange}
+              onTimeChange={handleStartTimeChange}
             />
           </div>
 
@@ -101,8 +183,9 @@ const EditEventModal = ({ event, profiles, onClose, onSave }) => {
             <DateTimePicker
               date={endDate}
               time={endTime}
-              onDateChange={setEndDate}
-              onTimeChange={setEndTime}
+              onDateChange={handleEndDateChange}
+              onTimeChange={handleEndTimeChange}
+              minDate={startDate}
             />
           </div>
 

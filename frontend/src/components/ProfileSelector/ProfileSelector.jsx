@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Search, Check, Plus } from 'lucide-react';
+import { ChevronDown, Search, Check, Plus, Trash2 } from 'lucide-react';
 import './ProfileSelector.css';
 
-const ProfileSelector = ({ profiles, selectedProfile, onProfileChange, onAddProfile }) => {
+const ProfileSelector = ({ profiles, selectedProfile, onProfileChange, onAddProfile, onDeleteProfile }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddInput, setShowAddInput] = useState(false);
@@ -32,6 +32,13 @@ const ProfileSelector = ({ profiles, selectedProfile, onProfileChange, onAddProf
       setNewProfileName('');
       setShowAddInput(false);
       setSearchTerm('');
+    }
+  };
+
+  const handleDeleteProfile = (e, profileId) => {
+    e.stopPropagation(); // Prevent the profile selection
+    if (window.confirm('Are you sure you want to delete this profile?')) {
+      onDeleteProfile(profileId);
     }
   };
 
@@ -73,7 +80,7 @@ const ProfileSelector = ({ profiles, selectedProfile, onProfileChange, onAddProf
 
           <div className="dropdown-options">
             {filteredProfiles.map(profile => (
-              <button
+              <div
                 key={profile._id}
                 className={`dropdown-option ${selectedProfile === profile._id ? 'selected' : ''}`}
                 onClick={() => {
@@ -84,8 +91,16 @@ const ProfileSelector = ({ profiles, selectedProfile, onProfileChange, onAddProf
                 {selectedProfile === profile._id && (
                   <Check size={14} className="check-icon" />
                 )}
-                <span>{profile.name}</span>
-              </button>
+                <span className="profile-name">{profile.name}</span>
+                <button
+                  type="button"
+                  className="delete-profile-btn"
+                  onClick={(e) => handleDeleteProfile(e, profile._id)}
+                  title="Delete profile"
+                >
+                  <Trash2 size={12} />
+                </button>
+              </div>
             ))}
           </div>
 

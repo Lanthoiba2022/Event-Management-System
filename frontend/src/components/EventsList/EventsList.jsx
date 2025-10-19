@@ -2,19 +2,10 @@ import { useState } from 'react';
 import EventCard from '../EventCard/EventCard';
 import EditEventModal from '../EditEventModal/EditEventModal';
 import EventLogsModal from '../EventLogsModal/EventLogsModal';
+import TimezoneSelector from '../TimezoneSelector/TimezoneSelector';
 import './EventsList.css';
 
-const TIMEZONES = [
-  { value: 'America/New_York', label: 'Eastern Time (ET)' },
-  { value: 'America/Chicago', label: 'Central Time (CT)' },
-  { value: 'America/Denver', label: 'Mountain Time (MT)' },
-  { value: 'America/Los_Angeles', label: 'Pacific Time (PT)' },
-  { value: 'Asia/Kolkata', label: 'India (IST)' },
-  { value: 'Europe/London', label: 'London (GMT)' },
-  { value: 'Asia/Tokyo', label: 'Tokyo (JST)' },
-];
-
-const EventsList = ({ events, profiles, viewTimezone, onTimezoneChange, onEventUpdated }) => {
+const EventsList = ({ events, profiles, viewTimezone, onTimezoneChange, onEventUpdated, onProfileAdded, onEventDeleted }) => {
   const [editingEvent, setEditingEvent] = useState(null);
   const [viewingLogs, setViewingLogs] = useState(null);
 
@@ -37,17 +28,11 @@ const EventsList = ({ events, profiles, viewTimezone, onTimezoneChange, onEventU
       
       <div className="events-list-header">
         <label className="timezone-label">View in Timezone</label>
-        <select
-          className="timezone-select"
-          value={viewTimezone}
-          onChange={(e) => onTimezoneChange(e.target.value)}
-        >
-          {TIMEZONES.map(tz => (
-            <option key={tz.value} value={tz.value}>
-              {tz.label}
-            </option>
-          ))}
-        </select>
+        <TimezoneSelector
+          selectedTimezone={viewTimezone}
+          onTimezoneChange={onTimezoneChange}
+          placeholder="Select timezone..."
+        />
       </div>
 
       <div className="events-container">
@@ -64,6 +49,7 @@ const EventsList = ({ events, profiles, viewTimezone, onTimezoneChange, onEventU
               viewTimezone={viewTimezone}
               onEdit={() => handleEditClick(event)}
               onViewLogs={() => handleViewLogsClick(event)}
+              onDelete={onEventDeleted}
             />
           ))
         )}
@@ -75,12 +61,14 @@ const EventsList = ({ events, profiles, viewTimezone, onTimezoneChange, onEventU
           profiles={profiles}
           onClose={() => setEditingEvent(null)}
           onSave={handleEventUpdate}
+          onAddProfile={onProfileAdded}
         />
       )}
 
       {viewingLogs && (
         <EventLogsModal
           event={viewingLogs}
+          profiles={profiles}
           onClose={() => setViewingLogs(null)}
         />
       )}
