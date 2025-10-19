@@ -36,6 +36,29 @@
   }
 }
 
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: 2rem;
+}
+
+.loading-container h2,
+.error-container h2 {
+  margin-bottom: 1rem;
+  color: hsl(var(--foreground));
+}
+
+.loading-container p,
+.error-container p {
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 1.5rem;
+}
+
 @media (max-width: 640px) {
   .event-management {
     padding: 1rem;

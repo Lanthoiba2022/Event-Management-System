@@ -1,17 +1,8 @@
 import { useState } from 'react';
 import MultiSelect from '../MultiSelect/MultiSelect';
 import DateTimePicker from '../DateTimePicker/DateTimePicker';
+import TimezoneSelector from '../TimezoneSelector/TimezoneSelector';
 import './EventForm.css';
-
-const TIMEZONES = [
-  { value: 'America/New_York', label: 'Eastern Time (ET)' },
-  { value: 'America/Chicago', label: 'Central Time (CT)' },
-  { value: 'America/Denver', label: 'Mountain Time (MT)' },
-  { value: 'America/Los_Angeles', label: 'Pacific Time (PT)' },
-  { value: 'Asia/Kolkata', label: 'India (IST)' },
-  { value: 'Europe/London', label: 'London (GMT)' },
-  { value: 'Asia/Tokyo', label: 'Tokyo (JST)' },
-];
 
 const EventForm = ({ profiles, onEventCreated, onAddProfile }) => {
   const [selectedProfiles, setSelectedProfiles] = useState([]);
@@ -65,17 +56,11 @@ const EventForm = ({ profiles, onEventCreated, onAddProfile }) => {
 
         <div className="form-group">
           <label className="form-label">Timezone</label>
-          <select
-            className="form-select"
-            value={timezone}
-            onChange={(e) => setTimezone(e.target.value)}
-          >
-            {TIMEZONES.map(tz => (
-              <option key={tz.value} value={tz.value}>
-                {tz.label}
-              </option>
-            ))}
-          </select>
+          <TimezoneSelector
+            selectedTimezone={timezone}
+            onTimezoneChange={setTimezone}
+            placeholder="Select timezone..."
+          />
         </div>
 
         <div className="form-group">
